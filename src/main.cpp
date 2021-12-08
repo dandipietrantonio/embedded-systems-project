@@ -16,7 +16,7 @@ struct XYZ {
 };
 
 int CUR_MOVEMENT= 1; // the current motion we're on
-XYZ CUR_MOVEMENT_ARR[300]; // you have three seconds to make your movement
+XYZ CUR_MOVEMENT_ARR[100]; // you have two seconds to make your movement
 int NUM_READINGS_FOR_CUR_MOVEMENT=0;
 
 float X,Y,Z; // current accelerometer reading
@@ -59,8 +59,9 @@ void loop() {
 
   bool needToClassify = false;
   while (CircuitPlayground.leftButton()) {
+    Serial.println("Button is pressed");
     needToClassify = true;
-    if (NUM_READINGS_FOR_CUR_MOVEMENT == 300) {
+    if (NUM_READINGS_FOR_CUR_MOVEMENT == 100) {
       tooManyReadingsError();
     } else {
       XYZ curReading;
@@ -72,7 +73,11 @@ void loop() {
       NUM_READINGS_FOR_CUR_MOVEMENT += 1;
     }
   }
-  if (needToClassify) classifyMovement();
+  
+  if (needToClassify) {
+    classifyMovement();
+    NUM_READINGS_FOR_CUR_MOVEMENT = 0;
+  };
 
-  delay(10);
+  delay(20);
 }
