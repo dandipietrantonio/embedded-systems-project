@@ -72,6 +72,7 @@ void loop() {
 
       NUM_READINGS_FOR_CUR_MOVEMENT += 1;
     }
+    delay(20);
   }
   
   if (needToClassify) {
@@ -79,5 +80,4 @@ void loop() {
     NUM_READINGS_FOR_CUR_MOVEMENT = 0;
   };
 
-  delay(20);
 }
