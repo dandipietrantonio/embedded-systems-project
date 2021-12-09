@@ -21,22 +21,24 @@ int NUM_READINGS_FOR_CUR_MOVEMENT=0;
 
 float X,Y,Z; // current accelerometer reading
 
+int xSum, ySum, zSum;
+
 void setup() {
   Serial.begin(9600);
   CircuitPlayground.begin();
 }
 
 void classifyMovement() {
-  int xSum, ySum, zSum;
+  unsigned long long int xSum, ySum, zSum;
   for (int i = 0; i < NUM_READINGS_FOR_CUR_MOVEMENT; i++) {
     XYZ curReading = CUR_MOVEMENT_ARR[i];
     float curX = curReading.x;
     float curY = curReading.y;
     float curZ = curReading.z - 9.8; // to account for gravity
 
-    xSum += curX > 0 ? curX : -1 * curX;
-    ySum += curY > 0 ? curY : -1 * curY;
-    zSum += curZ > 0 ? curZ : -1 * curZ;
+    xSum += (int) (abs(curX) * 10);
+    ySum += (int) (abs(curY) * 10);
+    zSum += (int) ((abs(curZ) - 9.8) * 10);
   }
 
   if (xSum >= ySum && xSum >= zSum) {
@@ -44,7 +46,7 @@ void classifyMovement() {
   } else if (ySum >= xSum && ySum >= zSum) {
     Serial.println("Y is max!");
   } else if (zSum >= xSum && zSum >= ySum) {
-    Serial.println("Y is max!");
+    Serial.println("Z is max!");
   }
 }
 
@@ -53,31 +55,36 @@ void tooManyReadingsError(){
 }
 
 void loop() {
-  X = CircuitPlayground.motionX();
-  Y = CircuitPlayground.motionY();
-  Z = CircuitPlayground.motionZ();
-
   bool needToClassify = false;
+
+  xSum=0;
+  ySum=0;
+  zSum=0;
+
   while (CircuitPlayground.leftButton()) {
     Serial.println("Button is pressed");
     needToClassify = true;
-    if (NUM_READINGS_FOR_CUR_MOVEMENT == 100) {
-      tooManyReadingsError();
-    } else {
-      XYZ curReading;
-      curReading.x = CircuitPlayground.motionX();
-      curReading.y = CircuitPlayground.motionY();
-      curReading.z = CircuitPlayground.motionZ();
-      CUR_MOVEMENT_ARR[NUM_READINGS_FOR_CUR_MOVEMENT] = curReading;
-
-      NUM_READINGS_FOR_CUR_MOVEMENT += 1;
-    }
-    delay(20);
+    xSum += (int) abs((CircuitPlayground.motionX() * 100));
+    ySum += (int) abs((CircuitPlayground.motionY() * 100));
+    zSum += (int) abs(((CircuitPlayground.motionZ()- 9.8) * 100));
+    delay(5);
   }
   
   if (needToClassify) {
-    classifyMovement();
-    NUM_READINGS_FOR_CUR_MOVEMENT = 0;
+    Serial.print("XSUM:");
+    Serial.println(xSum);
+    Serial.print("ySUM:");
+    Serial.println(ySum);
+    Serial.print("zSUM:");
+    Serial.println(zSum);
+    if (xSum >= ySum && xSum >= zSum) {
+      Serial.println("X is max!");
+    } else if (ySum >= xSum && ySum >= zSum) {
+      Serial.println("Y is max!");
+    } else if (zSum >= xSum && zSum >= ySum) {
+      Serial.println("Z is max!");
+    }
+    needToClassify = false;
   };
 
 }
