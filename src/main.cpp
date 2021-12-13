@@ -9,49 +9,46 @@
   NOTE: board must be held as flat as possible, with buttons facing up
 */
 
-struct XYZ {
-  float x;
-  float y;
-  float z;
-};
-
-int CUR_MOVEMENT= 1; // the current motion we're on
-XYZ CUR_MOVEMENT_ARR[100]; // you have two seconds to make your movement
-int NUM_READINGS_FOR_CUR_MOVEMENT=0;
-
-float X,Y,Z; // current accelerometer reading
 
 int xSum, ySum, zSum;
+
+char CUR_STRING[3];
+int CUR_STRING_IDX = 0;
 
 void setup() {
   Serial.begin(9600);
   CircuitPlayground.begin();
 }
 
-void classifyMovement() {
-  unsigned long long int xSum, ySum, zSum;
-  for (int i = 0; i < NUM_READINGS_FOR_CUR_MOVEMENT; i++) {
-    XYZ curReading = CUR_MOVEMENT_ARR[i];
-    float curX = curReading.x;
-    float curY = curReading.y;
-    float curZ = curReading.z - 9.8; // to account for gravity
-
-    xSum += (int) (abs(curX) * 10);
-    ySum += (int) (abs(curY) * 10);
-    zSum += (int) ((abs(curZ) - 9.8) * 10);
-  }
-
-  if (xSum >= ySum && xSum >= zSum) {
-    Serial.println("X is max!");
-  } else if (ySum >= xSum && ySum >= zSum) {
-    Serial.println("Y is max!");
-  } else if (zSum >= xSum && zSum >= ySum) {
-    Serial.println("Z is max!");
-  }
+void playResetTone() {
+  CircuitPlayground.playTone(900, 500);
 }
 
-void tooManyReadingsError(){
-  Serial.println("ERROR: You took too long, you only have 3 seconds to record your movement");
+void playXTone() {
+  CircuitPlayground.playTone(500, 100);
+}
+
+void playYTone() {
+  CircuitPlayground.playTone(500, 50);
+  delay(60);
+  CircuitPlayground.playTone(500, 50);
+}
+
+void playZTone() {
+  CircuitPlayground.playTone(500, 33);
+  delay(40);
+  CircuitPlayground.playTone(500, 33);
+  delay(40);
+  CircuitPlayground.playTone(500, 33);
+}
+
+void messageSentTone() {
+  delay(90);
+  CircuitPlayground.playTone(200, 80);
+  delay(90);
+  CircuitPlayground.playTone(500, 80);
+  delay(90);
+  CircuitPlayground.playTone(900, 80);
 }
 
 void loop() {
@@ -78,13 +75,31 @@ void loop() {
     Serial.print("zSUM:");
     Serial.println(zSum);
     if (xSum >= ySum && xSum >= zSum) {
-      Serial.println("X is max!");
+      CUR_STRING[CUR_STRING_IDX] = 'X';
+      playXTone();
     } else if (ySum >= xSum && ySum >= zSum) {
-      Serial.println("Y is max!");
+      CUR_STRING[CUR_STRING_IDX] = 'Y';
+      playYTone();
     } else if (zSum >= xSum && zSum >= ySum) {
-      Serial.println("Z is max!");
+      CUR_STRING[CUR_STRING_IDX] = 'Z';
+      playZTone();
     }
     needToClassify = false;
+    CUR_STRING_IDX += 1;
   };
+
+  if (CUR_STRING_IDX > 2) {
+    Serial.print("Your string is: ");
+    Serial.print(CUR_STRING[0]);
+    Serial.print(CUR_STRING[1]);
+    Serial.println(CUR_STRING[2]);
+    CUR_STRING_IDX = 0;
+    messageSentTone();
+  }
+
+  if (CircuitPlayground.rightButton()) { // reset button hit
+    CUR_STRING_IDX = 0;
+    playResetTone();
+  }
 
 }
