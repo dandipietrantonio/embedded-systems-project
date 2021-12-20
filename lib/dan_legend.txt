@@ -1,0 +1,14 @@
+#|movement|led#|message|
+--------------------------
+0 - YXY - led0 - fail
+1 - XYZ - led1 - hello
+2 - ZXZ - led2 - goodbye
+3 - YZY - led3 - acknowledge
+4 - ZXY - led4 - query
+5 - XZX - led5 - read
+6 - ZYY - led6 - write
+7 - YXZ - led7 - true
+8 - YYX - led8 - false
+9 - XZZ - led9 - pass
+
+

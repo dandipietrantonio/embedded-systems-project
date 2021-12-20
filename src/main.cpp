@@ -150,7 +150,7 @@ void send_message(char *arr) {
     else if (c1 == 'X' && c2 == 'Z' && c3 == 'Z'){
     CircuitPlayground.setPixelColor(9, 0, 255, 0);
   } 
-    else if (c1 == 'X' && c2 == 'X' && c3 == 'X'){
+    else if (c1 == 'Y' && c2 == 'X' && c3 == 'Y'){
     CircuitPlayground.setPixelColor(0, 0, 255, 0);
   }  
   else {
