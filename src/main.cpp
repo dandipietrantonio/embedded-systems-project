@@ -163,7 +163,7 @@ void send_message(char *arr) {
     CircuitPlayground.setPixelColor(7, 255, 0, 0);
     CircuitPlayground.setPixelColor(8, 255, 0, 0);
     CircuitPlayground.setPixelColor(9, 255, 0, 0);
-    CircuitPlayground.setPixelColor(10, 255, 0, 0);
+    CircuitPlayground.setPixelColor(0, 255, 0, 0);
   }
 }
 
